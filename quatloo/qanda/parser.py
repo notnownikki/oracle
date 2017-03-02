@@ -30,6 +30,7 @@ def parse_qa(qa):
     if match:
         keywords = match.groups()[0]
         qa = qa.replace(keywords, '').strip()
+        keywords = keywords.replace('(','').replace(')','')
     else:
         keywords = ''
 

@@ -47,7 +47,7 @@ class QAParserTestCase(TestCase):
         qa = 'How do I change the theme? (themes, style, styles) Use our handy tool! https://example.com/'
         expected = {
             'question': 'How do I change the theme?',
-            'keywords': '(themes, style, styles)',
+            'keywords': 'themes, style, styles',
             'url': 'https://example.com/',
             'answer': 'Use our handy tool!'
         }
