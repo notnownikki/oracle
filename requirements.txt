@@ -1,0 +1,3 @@
+django
+djangorestframework
+pbr>=0.5.21,<1.0
