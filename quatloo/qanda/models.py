@@ -9,6 +9,6 @@ class Question(models.Model):
 class Answer(models.Model):
     question = models.ForeignKey(Question)
     # where to find the solution
-    url = models.UrlField()
+    url = models.URLField()
     # extra answer detail
     answer = models.TextField()

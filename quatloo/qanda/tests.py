@@ -1,5 +1,7 @@
 from django.test import TestCase
 from qanda.parser import parse_qa, ParserError
+from qanda.models import Question, Answer
+from qanda.factory import get_question, get_answer
 
 
 class QAParserTestCase(TestCase):
@@ -76,3 +78,18 @@ class QAParserTestCase(TestCase):
     def test_no_question(self):
         qa = 'I liek chocolate milk'
         self.assertRaises(ParserError, parse_qa, qa)
+
+
+class QuestionFactoryTestCase(TestCase):
+    def test_new_question(self):
+        question = get_question(
+            question_txt='How do I do a thing?', keywords='stuff, things')
+        self.assertEqual(question.question, 'How do I do a thing?')
+        self.assertEqual(question.keywords, 'stuff, things')
+
+    def test_update_question_keywords(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        question = get_question(
+            question_txt='How do I do a thing?', keywords='jam, cakes')
+        self.assertEqual(question.keywords, 'cakes, jam, stuff, things')
