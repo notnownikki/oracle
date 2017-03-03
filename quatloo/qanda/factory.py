@@ -22,8 +22,12 @@ def get_question(question_txt, keywords):
     return question
 
 
-def get_answer(question, answer_txt, url):
-    # does an answer exist for this question with this url?
-        # update the answer text if any was supplied
-    # else, create new answer for this question
-    pass
+def get_answer(question, url, answer_txt):
+    answer, _ = Answer.objects.get_or_create(
+        question=question, url=url)
+
+    if answer_txt != '':
+        answer.answer = answer_txt
+        answer.save()
+
+    return answer

@@ -93,3 +93,68 @@ class QuestionFactoryTestCase(TestCase):
         question = get_question(
             question_txt='How do I do a thing?', keywords='jam, cakes')
         self.assertEqual(question.keywords, 'cakes, jam, stuff, things')
+
+
+class AnswerFactoryTestCase(TestCase):
+    def test_new_answer(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        answer = get_answer(
+            question=question, url='http://example.com/',
+            answer_txt='Here is an example.')
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.url, 'http://example.com/')
+        self.assertEqual(answer.answer, 'Here is an example.')
+        self.assertEqual(Answer.objects.all().count(), 1)
+
+    def test_new_answer_with_empty_url(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        answer = get_answer(
+            question=question, answer_txt='Here is an example.', url='')
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.url, '')
+        self.assertEqual(answer.answer, 'Here is an example.')
+        self.assertEqual(Answer.objects.all().count(), 1)
+
+    def test_additional_answer(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        Answer.objects.create(
+            question=question, url='http://example.com/',
+            answer='Here is an example.')
+        answer = get_answer(
+            question=question, url='http://other-example.com/',
+            answer_txt='Here is another example.')
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.url, 'http://other-example.com/')
+        self.assertEqual(answer.answer, 'Here is another example.')
+        self.assertEqual(Answer.objects.all().count(), 2)
+
+    def test_answer_text_updated(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        Answer.objects.create(
+            question=question, url='http://example.com/',
+            answer='Old answer')
+        answer = get_answer(
+            question=question, url='http://example.com/',
+            answer_txt='Here is an example.')
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.url, 'http://example.com/')
+        self.assertEqual(answer.answer, 'Here is an example.')
+        self.assertEqual(Answer.objects.all().count(), 1)
+
+    def test_answer_text_not_updated_if_blank(self):
+        question = Question.objects.create(
+            question='How do I do a thing?', keywords='things, stuff')
+        Answer.objects.create(
+            question=question, url='http://example.com/',
+            answer='Old answer')
+        answer = get_answer(
+            question=question, url='http://example.com/',
+            answer_txt='')
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.url, 'http://example.com/')
+        self.assertEqual(answer.answer, 'Old answer')
+        self.assertEqual(Answer.objects.all().count(), 1)
