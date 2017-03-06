@@ -1,10 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase, SimpleTestCase
 from qanda.parser import parse_qa, ParserError
 from qanda.models import Question, Answer
 from qanda.factory import get_question, get_answer
 
 
-class QAParserTestCase(TestCase):
+class QAParserTestCase(SimpleTestCase):
     def test_extract_question_and_url(self):
         qa = 'How do I do the thing? http://learntodoathing.com/'
         expected = {
@@ -158,3 +158,33 @@ class AnswerFactoryTestCase(TestCase):
         self.assertEqual(answer.url, 'http://example.com/')
         self.assertEqual(answer.answer, 'Old answer')
         self.assertEqual(Answer.objects.all().count(), 1)
+
+
+class QuestionMatchTestCase(SimpleTestCase):
+    """
+    We need to override Django's transaction handling to make sure
+    the fulltext index is used when we insert test data.
+    """
+    allow_database_queries = True
+
+    def tearDown(self):
+        super(QuestionMatchTestCase, self).tearDown()
+        Question.objects.all().delete()
+
+    def test_match_against_question(self):
+        question = Question(
+            question='How do I make a widget?',
+            keywords='custom, widgets, easteregg')
+        question.save()
+        questions = Question.match('I want to make a widget.')
+        self.assertEqual(1, len(list(questions)))
+        self.assertEqual(question.id, questions[0].id)
+
+    def test_match_against_keywords(self):
+        question = Question(
+            question='How do I make a widget?',
+            keywords='custom, widgets, easteregg')
+        question.save()
+        questions = Question.match('Show an easteregg please.')
+        self.assertEqual(1, len(list(questions)))
+        self.assertEqual(question.id, questions[0].id)

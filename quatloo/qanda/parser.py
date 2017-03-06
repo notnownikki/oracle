@@ -9,7 +9,7 @@ class ParserError(Exception):
 
 def parse_qa(qa):
     if '?' not in qa:
-        raise ParserError()
+        raise ParserError('No question found')
 
     qa = qa.strip()
 

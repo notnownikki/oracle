@@ -35,4 +35,6 @@ class Migration(migrations.Migration):
             name='question',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='qanda.Question'),
         ),
+        migrations.RunSQL(
+            [("ALTER TABLE qanda_question ADD FULLTEXT INDEX question_search (question, keywords)", [])]),
     ]
