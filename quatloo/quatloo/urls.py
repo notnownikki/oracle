@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from qapi import urls as api_urls
 
 urlpatterns = [
+	url(r'^api/v1/ask/', api_urls.question_match),
+	url(r'^api/v1/answer/', api_urls.answer),
     url(r'^admin/', admin.site.urls),
 ]

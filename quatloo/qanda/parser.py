@@ -1,13 +1,27 @@
 import re
 
-URL_RE = re.compile('.*(https?:\/\/([\da-z\.-]+\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)?)$')
+URL_RE = re.compile(
+    '.*(https?:\/\/([\da-z\.-]+\.([a-z\.]{2,6})([\/\w \.-]*)*\/?)?)$')
 KEYWORDS_RE = re.compile('(\(.*\))')
+
 
 class ParserError(Exception):
     pass
 
 
 def parse_qa(qa):
+    """
+    Turns text such as:
+    How do I make a widget? (widgets, custom) Widgets yay. http://widgets.com/
+
+    into:
+        {
+            question: 'How do I make a widget?',
+            keywords: 'widgets, custom',
+            answer: 'Widgets yay',
+            url: 'https://widgets.com/'
+        }
+    """
     if '?' not in qa:
         raise ParserError('No question found')
 
@@ -30,7 +44,7 @@ def parse_qa(qa):
     if match:
         keywords = match.groups()[0]
         qa = qa.replace(keywords, '').strip()
-        keywords = keywords.replace('(','').replace(')','')
+        keywords = keywords.replace('(', '').replace(')', '')
     else:
         keywords = ''
 
